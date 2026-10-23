@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas import NovoPedido, AtualizarPedido
+from loja.schemas import NovoPedido, AtualizarPedido
 from crud import pedidos as crud_pedidos
 
 router = APIRouter(tags=["Pedidos"])
