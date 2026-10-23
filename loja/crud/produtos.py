@@ -1,4 +1,4 @@
-from loja.database import conexao, cursor
+from database import conexao, cursor
 
 def tabela_produtos():
     sql = (
