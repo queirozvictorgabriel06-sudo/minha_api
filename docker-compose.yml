@@ -4,25 +4,21 @@ services:
     container_name: postgres_loja
     restart: unless-stopped
     environment:
-      POSTGRES_DB: loja
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
-      TZ: America/Sao_Paulo
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - TZ=America/Sao_Paulo
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d loja"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-volumes:
-  postgres_data:
-    driver: local
-
-api:
+  api:
     build: .
     container_name: api_loja
     restart: unless-stopped
@@ -30,13 +26,14 @@ api:
       - "8000:8000"
     depends_on:
       postgres:
-        condition: service_healthy # A API só liga se o healthcheck do banco passar!
+        condition: service_healthy
     environment:
-      - DB_HOST=postgres # O nome do host agora é o nome do container do banco
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=loja
-      - DB_USER=postgres
-      - DB_PASSWORD=${DB_PASSWORD:-123456}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
 
 volumes:
   postgres_data:
